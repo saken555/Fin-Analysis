@@ -1,12 +1,8 @@
-\*\*\[English version: README.md](./README.md)\*\*
+**[English version: README.md](./README.md)**
 
 
 
 --
-
-
-
-Таким образом, оба файла будут иметь перекрестные ссылки для удобной навигации!
 
 
 
@@ -106,16 +102,11 @@ Fact Table Optimization: Для таблиц Fact Sale и Dimension исполь
 
 
 
-!\[Data Model Star Schema](./03\_Data\_Model\_Star\_Schema.png)
+!\[Data Model Star Schema](./03_Data_Model_Star_Schema.png)
 
+![Page 1](./01_Page.png)
 
-
-!\[Page 1](./01\_Page.png)
-
-
-
-!\[Page 2](./02\_Page.png)
-
+![Page 2](./02_Page.png)
 
 
 📂 Структура проекта
@@ -173,4 +164,5 @@ M-Code Update: Откройте M-коды (Fact\_Sale.m и Fact\_OPEX.m) и з�
 
 
 Обновление данных: Откройте Fin\_Analysis.pbix и нажмите "Обновить".
+
 
