@@ -1,0 +1,14 @@
+let
+    // 1. Подключение к источнику SQL (WideWorldImportersDW). 
+    // УКАЖИТЕ СВОЕ ИМЯ СЕРВЕРА ВМЕСТО 'YOUR_SQL_SERVER_NAME'
+    // Connecting to SQL source (WideWorldImportersDW).
+    // SPECIFY YOUR SERVER NAME INSTEAD OF 'YOUR_SQL_SERVER_NAME'
+    Source = Sql.Database("YOUR_SQL_SERVER_NAME", "WideWorldImportersDW"),
+    
+    Dimension_Customer = Source{[Schema="Dimension",Item="Customer"]}[Data],
+    
+    // 2. Выбор ключевых колонок: ключ клиента, имя, категория и группа закупок
+    // Selecting key columns: customer key, name, category, and buying group
+    #"Selected Columns" = Table.SelectColumns(Dimension_Customer,{"Customer Key", "Customer", "Category", "Buying Group"})
+in
+    #"Selected Columns"

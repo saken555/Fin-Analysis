@@ -1,0 +1,24 @@
+let
+    // 1. Подключение к источнику SQL (WideWorldImportersDW). 
+    // УКАЖИТЕ СВОЕ ИМЯ СЕРВЕРА ВМЕСТО 'YOUR_SQL_SERVER_NAME'
+    // Connecting to SQL source (WideWorldImportersDW).
+    // SPECIFY YOUR SERVER NAME INSTEAD OF 'YOUR_SQL_SERVER_NAME'
+    Source = Sql.Database("YOUR_SQL_SERVER_NAME", "WideWorldImportersDW"),
+    
+    // Выбор таблицы фактов Sale из схемы Fact
+    // Selecting the Fact Sale table from the Fact schema
+    Fact_Sale = Source{[Schema="Fact",Item="Sale"]}[Data],
+    
+    // 2. ОПТИМИЗАЦИЯ: Фильтрация данных по дате. 
+    // Загружаем данные, начиная с 1 января 2013 года, чтобы сократить объем импорта. 
+    // Этот шаг будет "свернут" (Query Folded) и выполнен на SQL-сервере.
+    // OPTIMIZATION: Filtering data by date.
+    // Loading data starting from January 1, 2013, to reduce import size. 
+    // This step will be Query Folded and executed on the SQL server.
+    #"Filtered Rows by Date" = Table.SelectRows(Fact_Sale, each [Invoice Date Key] >= 20130101),
+
+    // 3. Выбор только 6 ключевых колонок, необходимых для моделирования P&L
+    // Selecting only the 6 key columns required for P&L modeling
+    #"Selected Columns" = Table.SelectColumns(#"Filtered Rows by Date",{"City Key", "Customer Key", "Stock Item Key", "Invoice Date Key", "Total Excluding Tax", "Profit"})
+in
+    #"Selected Columns"

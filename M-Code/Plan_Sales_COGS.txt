@@ -1,0 +1,27 @@
+let
+    // Подключение к Excel-файлу 
+    // Connecting to the Excel file 
+    Source = Excel.Workbook(File.Contents("Financials.xlsx"), null, true),
+    
+    // Выбор листа с данными плана продаж
+    // Selecting the sales plan data sheet
+    Plan_Sales_COGS_Sheet = Source{[Item="Plan_Sales_COGS",Kind="Sheet"]}[Data],
+    
+    // Шаг 1: Использование первой строки как заголовков
+    // Step 1: Using the first row as headers
+    #"Promoted Headers" = Table.PromoteHeaders(Plan_Sales_COGS_Sheet, [PromoteAllScalars=true]),
+    
+    // Шаг 2: Изменение типов данных
+    // Step 2: Changing data types
+    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{
+        {"Date", type date}, 
+        {"Sales_Territory", type text}, 
+        {"Plan_Revenue", type number}, 
+        {"Plan_COGS", type number}
+        }),
+    
+    // Шаг 3: Приведение даты к началу месяца (для корректного сопоставления с календарем)
+    // Step 3: Transforming the date to the start of the month (for correct calendar mapping)
+    #"Transformed Columns" = Table.TransformColumns(#"Changed Type", {{"Date", Date.StartOfMonth, type date}})
+in
+    #"Transformed Columns"

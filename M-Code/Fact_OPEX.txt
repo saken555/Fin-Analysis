@@ -1,0 +1,23 @@
+let
+    // Подключение к Excel-файлу 
+    // Connecting to the Excel file 
+
+    Source = Excel.Workbook(File.Contents("Financials.xlsx"), null, true),
+    
+    // Выбор листа с фактическими данными расходов
+    // Selecting the actual OPEX data sheet
+    Fact_OPEX_Sheet = Source{[Item="Fact_OPEX",Kind="Sheet"]}[Data],
+    
+    // Шаг 1: Использование первой строки как заголовков
+    // Step 1: Using the first row as headers
+    #"Promoted Headers" = Table.PromoteHeaders(Fact_OPEX_Sheet, [PromoteAllScalars=true]),
+    
+    // Шаг 2: Изменение типов данных 
+    // Step 2: Changing data types
+    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{
+        {"Date", type date}, 
+        {"Expense_Type", type text}, 
+        {"Amount", type number}
+        })
+in
+    #"Changed Type"

@@ -1,0 +1,20 @@
+let
+    // 1. Подключение к источнику SQL (WideWorldImportersDW). 
+    // УКАЖИТЕ СВОЕ ИМЯ СЕРВЕРА ВМЕСТО 'YOUR_SQL_SERVER_NAME'
+    // Connecting to SQL source (WideWorldImportersDW).
+    // SPECIFY YOUR SERVER NAME INSTEAD OF 'YOUR_SQL_SERVER_NAME'
+    Source = Sql.Database("YOUR_SQL_SERVER_NAME", "WideWorldImportersDW"),
+
+    Dimension_City = Source{[Schema="Dimension",Item="City"]}[Data],
+    
+    // 2. ФИЛЬТРАЦИЯ: Удаляем строки с неактуальными территориями ("N/A" и "External").
+    // Этот шаг выполняется на стороне SQL-сервера (Query Folding).
+    // FILTERING: Removing rows with irrelevant sales territories ("N/A" and "External").
+    // This step is executed on the SQL server side (Query Folding).
+    #"Filtered Rows" = Table.SelectRows(Dimension_City, each [Sales Territory] <> "N/A" and [Sales Territory] <> "External"),
+    
+    // 3. Выбор ключевых колонок для моделирования географии продаж
+    // Selecting key columns for sales geography modeling
+    #"Selected Columns" = Table.SelectColumns(#"Filtered Rows",{"City Key", "City", "State Province", "Country", "Continent", "Sales Territory", "Region", "Subregion"})
+in
+    #"Selected Columns"

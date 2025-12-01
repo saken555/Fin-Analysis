@@ -1,0 +1,13 @@
+let
+    // 1. Подключение к источнику SQL (WideWorldImportersDW). 
+    // УКАЖИТЕ СВОЕ ИМЯ СЕРВЕРА ВМЕСТО 'YOUR_SQL_SERVER_NAME'
+    // Connecting to SQL source (WideWorldImportersDW).
+    // SPECIFY YOUR SERVER NAME INSTEAD OF 'YOUR_SQL_SERVER_NAME'
+    Source = Sql.Database("YOUR_SQL_SERVER_NAME", "WideWorldImportersDW"),
+    Dimension_Stock_Item = Source{[Schema="Dimension",Item="Stock Item"]}[Data],
+    
+    // 2. Выбор только двух ключевых колонок: ключа и наименования товара
+    // Selecting only the two key columns: key and stock item name
+    #"Selected Columns" = Table.SelectColumns(Dimension_Stock_Item,{"Stock Item Key", "Stock Item"})
+in
+    #"Selected Columns"
