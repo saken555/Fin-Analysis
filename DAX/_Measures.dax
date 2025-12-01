@@ -1,0 +1,95 @@
+/*
+##################################################
+## 1. БАЗОВЫЕ МЕРЫ ФАКТ / ПЛАН (INPUTS)
+## 1. BASE MEASURES ACTUAL / PLAN (INPUTS)
+##################################################
+*/
+
+// --- ФАКТ (Actuals) ---
+Actual Revenue = SUM('Fact Sale'[Total Excluding Tax])
+Actual COGS = SUM('Fact Sale'[Total Excluding Tax]) - SUM('Fact Sale'[Profit])
+Actual OPEX = SUM('Fact OPEX'[Amount])
+
+// --- ПЛАН (Plan) ---
+Plan Revenue = SUM('Plan Sales COGS'[Plan_Revenue])
+Plan COGS = SUM('Plan Sales COGS'[Plan_COGS])
+Plan OPEX = SUM('Plan OPEX'[Plan_Amount])
+
+
+/*
+##################################################
+## 2. РАСЧЕТНЫЕ МЕРЫ P&L (Gross Profit & EBIT)
+## 2. P&L CALCULATED MEASURES (Gross Profit & EBIT)
+##################################################
+*/
+
+// --- ФАКТ (Actuals) ---
+Actual Gross Profit = [Actual Revenue] - [Actual COGS]
+Actual EBIT = [Actual Gross Profit] - [Actual OPEX]
+
+// --- ПЛАН (Plan) ---
+Plan Gross Profit = [Plan Revenue] - [Plan COGS]
+Plan EBIT = [Plan Gross Profit] - [Plan OPEX]
+
+
+/*
+##################################################
+## 3. МЕРЫ ОТКЛОНЕНИЙ (VARIANCE)
+## 3. VARIANCE MEASURES (Actual vs. Plan)
+##################################################
+*/
+
+// --- Абсолютное отклонение (Var Abs) ---
+Var Abs Revenue = [Actual Revenue] - [Plan Revenue]
+Var Abs COGS = [Actual COGS] - [Plan COGS]
+Var Abs Gross Profit = [Actual Gross Profit] - [Plan Gross Profit]
+Var Abs OPEX = [Actual OPEX] - [Plan OPEX]
+Var Abs EBIT = [Actual EBIT] - [Plan EBIT]
+
+// --- Процентное отклонение (Var %) ---
+Var % Revenue = DIVIDE( [Var Abs Revenue], [Plan Revenue] )
+Var % COGS = DIVIDE( [Var Abs COGS], [Plan COGS] )
+Var % Gross Profit = DIVIDE( [Var Abs Gross Profit], [Plan Gross Profit] )
+Var % OPEX = DIVIDE( [Var Abs OPEX], [Plan OPEX] )
+Var % EBIT = DIVIDE( [Var Abs EBIT], [Plan EBIT] )
+
+
+/*
+##################################################
+## 4. МЕРЫ-ОБЕРТКИ (P&L WRAPPER)
+## 4. P&L WRAPPER MEASURES (For Matrix Visualization)
+##################################################
+*/
+
+Actual = 
+VAR SelectedLine = SELECTEDVALUE('P&L Structure'[P&L Line])
+RETURN
+SWITCH(TRUE(),
+    SelectedLine = "Revenue", [Actual Revenue],
+    SelectedLine = "COGS", [Actual COGS],
+    SelectedLine = "Gross Profit", [Actual Gross Profit],
+    SelectedLine = "OPEX", [Actual OPEX],
+    SelectedLine = "EBIT", [Actual EBIT]
+)
+
+Plan = 
+VAR SelectedLine = SELECTEDVALUE('P&L Structure'[P&L Line])
+RETURN
+SWITCH(TRUE(),
+    SelectedLine = "Revenue", [Plan Revenue],
+    SelectedLine = "COGS", [Plan COGS],
+    SelectedLine = "Gross Profit", [Plan Gross Profit],
+    SelectedLine = "OPEX", [Plan OPEX],
+    SelectedLine = "EBIT", [Plan EBIT]
+)
+
+Variance = 
+VAR SelectedLine = SELECTEDVALUE('P&L Structure'[P&L Line])
+RETURN
+SWITCH(TRUE(),
+    SelectedLine = "Revenue", [Var Abs Revenue],
+    SelectedLine = "COGS", [Var Abs COGS],
+    SelectedLine = "Gross Profit", [Var Abs Gross Profit],
+    SelectedLine = "OPEX", [Var Abs OPEX],
+    SelectedLine = "EBIT", [Var Abs EBIT]
+)
